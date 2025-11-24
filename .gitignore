@@ -1,0 +1,13 @@
+# Ignorar ambiente virtual
+.venv/
+venv/
+
+# Ignorar arquivos compilados do Python
+__pycache__/
+*.pyc
+
+# Ignorar segredos (MUITO IMPORTANTE)
+.env
+
+# Ignorar dados locais (Opcional, se a pasta data for pesada)
+data/
