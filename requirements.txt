@@ -5,3 +5,4 @@ sentence-transformers==3.0.1
 google-generativeai
 faiss-cpu
 numpy
+rank_bm25  
