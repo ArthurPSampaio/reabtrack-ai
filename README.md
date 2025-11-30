@@ -6,50 +6,54 @@
 
 > **Inteligência Clínica Avançada com RAG Híbrido.**
 
-Este é o microsserviço de Inteligência Artificial do projeto **ReabTrack**. Ele é responsável por analisar o histórico não estruturado dos pacientes e gerar laudos de evolução clínica de alta precisão.
+Este é o "cérebro" do projeto ReabTrack. Um microsserviço Python de alta performance responsável por analisar históricos clínicos não estruturados e gerar laudos de evolução técnica utilizando o estado da arte em IA Generativa.
 
 ## 🔬 Engenharia e Inovação
 
-Diferente de sistemas básicos de chat, este núcleo implementa uma arquitetura de **RAG (Retrieval-Augmented Generation) Híbrido em Dois Estágios**:
+Diferente de sistemas que apenas "resumem" textos, este núcleo implementa uma arquitetura de **Recuperação Híbrida em Dois Estágios (Two-Stage Hybrid RAG)** para garantir precisão médica e zero alucinação:
 
-1.  **Recuperação Híbrida (Hybrid Search):** Combina busca semântica (**FAISS** / `all-MiniLM-L6-v2`) com busca lexical (**BM25**) para capturar tanto o contexto quanto termos médicos exatos.
-2.  **Re-ranking (Cross-Encoder):** Um modelo especialista (`ms-marco-MiniLM`) reavalia os documentos recuperados para filtrar alucinações e garantir relevância máxima.
-3.  **Geração (LLM):** Utiliza o modelo **Google Gemini 2.0 Flash** para raciocínio clínico e redação do laudo estruturado.
+1.  **Busca Híbrida (Hybrid Search):** Combina a busca semântica (**FAISS**) com a busca lexical (**BM25**), capturando tanto o contexto ("dor no joelho") quanto termos técnicos exatos ("LCA", "Dipirona").
+2.  **Fusão e Re-ranking:** Utiliza o algoritmo **RRF (Reciprocal Rank Fusion)** seguido de um modelo **Cross-Encoder** (`ms-marco-MiniLM`) para reordenar os resultados e selecionar apenas as evidências clínicas mais relevantes.
+3.  **Geração Clínica:** Utiliza o modelo **Google Gemini 2.0 Flash** com Engenharia de Prompt avançada para redigir laudos estruturados em formato Markdown.
 
 ## 📂 Estrutura do Projeto
 
+A arquitetura segue o padrão de Clean Architecture simplificada:
 * `app/services/rag.py`: Motor de busca vetorial e lexical.
-* `app/services/engine.py`: Pipeline de inteligência e Prompt Engineering blindado.
-* `app/core/models.py`: Gerenciamento de memória e modelos (Singleton).
+* `app/services/engine.py`: Pipeline de inteligência e orquestração.
+* `app/core/models.py`: Singleton para gerenciamento eficiente de memória dos modelos de ML.
 
 ## 🚀 Como Rodar
 
-1.  **Ambiente Virtual:**
+1.  **Prepare o ambiente:**
     ```bash
+    git clone [https://github.com/ArthurPSampaio/reabtrack-ai.git](https://github.com/ArthurPSampaio/reabtrack-ai.git)
+    cd reabtrack-ai
     python -m venv .venv
-    # Windows:
-    .venv\Scripts\activate
-    # Linux/Mac:
-    source .venv/bin/activate
+    # Ative o venv (Windows: .venv\Scripts\activate | Mac/Linux: source .venv/bin/activate)
     ```
 
-2.  **Instalação:**
+2.  **Instale os pacotes:**
     ```bash
     pip install -r requirements.txt
     ```
-    *(Nota: Na primeira execução, o sistema baixará automaticamente os modelos de Embedding e Cross-Encoder).*
+    *(Nota: O download dos modelos de ML ocorrerá automaticamente na primeira execução).*
 
-3.  **Configuração:**
+3.  **Configure:**
     Crie o arquivo `.env`:
     ```env
     GEMINI_API_KEY=sua_chave_do_google_ai_studio
     EMB_MODEL=sentence-transformers/all-MiniLM-L6-v2
     ```
 
-4.  **Execução:**
+4.  **Execute o servidor:**
     ```bash
     uvicorn app.main:app --reload --port 8000
     ```
+
+## 🔗 Parte do Ecossistema ReabTrack
+
+* **Consumido por:** [reabtrack-backend](https://github.com/ArthurPSampaio/reabtrack-backend)
 
 ---
 Desenvolvido por **Arthur Sampaio** | TCC 2025
