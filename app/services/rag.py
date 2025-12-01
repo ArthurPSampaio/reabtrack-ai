@@ -87,6 +87,21 @@ def search_hybrid(paciente_id: str, query: str, k: int = 10) -> List[Dict[str, A
     
     return [item["doc"] for item in sorted_docs[:k]]
 
+def get_latest_docs(paciente_id: str, k: int = 3) -> List[str]:
+    _, meta_path, _ = _paths_for(paciente_id)
+    
+    if not os.path.exists(meta_path): 
+        return []
+        
+    try:
+        with open(meta_path, "r", encoding="utf-8") as f:
+            meta = json.load(f)
+            latest = meta[-k:] 
+            return [d["text"] for d in latest]
+    except Exception as e:
+        print(f"[RAG] Erro ao ler recentes: {e}")
+        return []
+
 def reset_index(paciente_id: str):
     paths = _paths_for(paciente_id)
     for p in paths:

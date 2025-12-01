@@ -1,6 +1,6 @@
 import time
 from typing import Dict, List
-from app.services.rag import search_hybrid
+from app.services.rag import search_hybrid, get_latest_docs
 from app.core.models import get_models
 
 def expand_query(query: str) -> str:
@@ -26,14 +26,25 @@ def advanced_retrieve(paciente_id: str, query: str) -> List[str]:
 
 def generate_clinical_report(paciente_id: str, indicadores: Dict) -> str:
     query = "Evolução da dor, capacidade funcional e adesão ao tratamento"
-    contexto = advanced_retrieve(paciente_id, query)
+    contexto_relevante = advanced_retrieve(paciente_id, query)
     
+    contexto_recente = get_latest_docs(paciente_id, k=3)
+    
+    contexto_final = contexto_recente[:] 
+    for doc in contexto_relevante:
+        if doc not in contexto_final:
+            contexto_final.append(doc)
+    
+    contexto_final = contexto_final[:8]
+
     stats_str = "\n".join([f"- {k}: {v}" for k, v in indicadores.items()])
-    historico_str = "\n".join([f"- {c}" for c in contexto])
+    
+    historico_str = "\n".join([f"- {c}" for c in contexto_final])
     
     prompt = (
         "Atue como um Fisioterapeuta Sênior Especialista. Escreva o **CORPO TEXTUAL** de um Laudo de Evolução Clínica.\n"
-        "Seu objetivo é fornecer uma análise aprofundada e técnica para compor o prontuário do paciente.\n\n"
+        "Seu objetivo é fornecer uma análise aprofundada e técnica para compor o prontuário do paciente.\n"
+        "Considere tanto o histórico recente quanto eventos passados relevantes.\n\n"
         
         "⚠️ ORDEM DE EXECUÇÃO RÍGIDA (SIGA ESTRITAMENTE):\n"
         "1. Gere a **Tabela de Indicadores** (MarkDown) no topo absoluto.\n"
@@ -45,7 +56,7 @@ def generate_clinical_report(paciente_id: str, indicadores: Dict) -> str:
         "- NÃO invente nomes de clínicas.\n\n"
         
         f"### DADOS QUANTITATIVOS:\n{stats_str}\n\n"
-        f"### HISTÓRICO CLÍNICO (RAG):\n{historico_str}\n\n"
+        f"### CONTEXTO CLÍNICO MISTO (Recente + Relevante):\n{historico_str}\n\n"
         
         "### FORMATO DE SAÍDA OBRIGATÓRIO (MARKDOWN):\n"
         
