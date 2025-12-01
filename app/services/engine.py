@@ -9,14 +9,11 @@ def expand_query(query: str) -> str:
 def advanced_retrieve(paciente_id: str, query: str) -> List[str]:
     start = time.time()
     
-    # 1. Expansão
     expanded_query = expand_query(query)
     
-    # 2. Recuperação Híbrida
     raw_docs = search_hybrid(paciente_id, expanded_query, k=15)
     if not raw_docs: return []
     
-    # 3. Re-ranking
     pairs = [[query, d["text"]] for d in raw_docs]
     reranker = get_models().reranker
     scores = reranker.predict(pairs)
